@@ -1,4 +1,13 @@
 #!/usr/bin/env node
+
+//node app.js --district=395 --dose=1 --date=30-05-2021 --age=24 --interval=2 --keep-alive=true --key=<KEY_VALUE> --hook=notify
+//node app.js --district=392 --dose=1 --date=30-05-2021 --age=24 --interval=3 --keep-alive=true --key=<KEY_VALUE> --hook=notify
+//node app.js --district=393 --dose=1 --date=30-05-2021 --age=24 --interval=3 --keep-alive=true --key=<KEY_VALUE> --hook=notify
+
+//node app.js --pincode=400088 --dose=1 --date=30-05-2021 --age=24 --interval=3 --keep-alive=true --key=<KEY_VALUE> --hook=notify
+//node app.js --pincode=410210 --dose=1 --date=30-05-2021 --age=24 --interval=3 --keep-alive=true --key=<KEY_VALUE> --hook=notify
+//node app.js --pincode=410206 --dose=1 --date=30-05-2021 --age=24 --interval=3 --keep-alive=true --key=<KEY_VALUE> --hook=notify
+
 const axios = require('axios')
 const argv = require('minimist')(process.argv.slice(2));
 const { format } = require('date-fns');
@@ -18,8 +27,8 @@ checkParams();
 function checkParams() {
     if (argv.help) {
         console.error('Refer documentation for more details');
-    } else if (argv._ && argv._.length && argv._.includes('run')) {
-        if (argv.key && typeof argv.key !== 'string') {
+    } else {
+    	  if (argv.key && typeof argv.key !== 'string') {
             console.error('Please provide a valid IFTTT Webook API Key by appending --key=<IFTTT-KEY> to recieve mobile notification \nRefer documentation for more details');
             return;
         } else if (argv.hook && typeof argv.hook !== 'string') {
@@ -95,8 +104,7 @@ function checkParams() {
             console.log('\n\n')
             scheduleCowinPinger(params);
         }
-    } else {
-        console.log('\nInvalid command\n\nRun `cowin-pinger run` with all required params to start pinging cowin portal\nRefer documentation for instructions on how to run package\n');
+        //console.log('\nInvalid command\n\nRun `cowin-pinger run` with all required params to start pinging cowin portal\nRefer documentation for instructions on how to run package\n');
     }
 }
 
@@ -107,7 +115,7 @@ function scheduleCowinPinger(params) {
         pingCount += 1;
         pingCowin(params);
         console.log("Ping Count - ", pingCount);
-    }, params.interval * 60000);
+    }, params.interval * 10000);
 }
 
 function pingCowin({ key, hook, age, districtId, appointmentsListLimit, date, pin, vaccine, dose, keepAlive }) {
@@ -129,16 +137,16 @@ function pingCowin({ key, hook, age, districtId, appointmentsListLimit, date, pi
                         if (dose === 1 && session.available_capacity_dose1 <= 0) {
                             return;
                         }
-                        if (dose === 2 && session.available_capacity_dose2 <= 0) {
+                        /*if (dose === 2 && session.available_capacity_dose2 <= 0) {
                             return;
-                        }
+                        }*/
                         if (vaccine && vaccine.toLowerCase() !== session.vaccine.toLowerCase()) {
                             return;
                         }
                         isSlotAvailable = true
                         appointmentsAvailableCount++;
                         if (appointmentsAvailableCount <= appointmentsListLimit) {
-                            dataOfSlot = `${dataOfSlot}\n[${center.pincode}] - Slot for ${session.available_capacity} is available: ${center.name} on ${session.date}`;
+                            dataOfSlot = `${dataOfSlot}\n[${center.pincode}] - Slot for ${session.available_capacity_dose1} is available: ${center.name} on ${session.date}`;
                         }
                     }
                 }))
@@ -163,6 +171,7 @@ function pingCowin({ key, hook, age, districtId, appointmentsListLimit, date, pi
                 console.log(dataOfSlot);
                 sound.play(notificationSound, 1);
                 console.log('Slots found')
+                console.log(format(new Date(), 'dd-MM-yyyy'))
                 if (!keepAlive) {
                     console.log('Stopping Pinger...')
                     clearInterval(timer);
