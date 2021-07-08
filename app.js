@@ -8,6 +8,13 @@
 //node app.js --pincode=410210 --dose=1 --date=30-05-2021 --age=24 --interval=3 --keep-alive=true --key=<KEY_VALUE> --hook=notify
 //node app.js --pincode=410206 --dose=1 --date=30-05-2021 --age=24 --interval=3 --keep-alive=true --key=<KEY_VALUE> --hook=notify
 
+// node app.js --district=395 --dose=2 --date=09-07-2021 --age=46 --interval=3 --keep-alive=true  --key=<KEY_VALUE> --hook=notify
+// node app.js --district=393 --dose=2 --date=09-07-2021 --age=46 --interval=3 --keep-alive=true  --key=<KEY_VALUE> --hook=notify
+// node app.js --district=392 --dose=2 --date=09-07-2021 --age=46 --interval=3 --keep-alive=true  --key=<KEY_VALUE> --hook=notify
+
+// node app.js --pin=410210 --dose=2 --date=09-07-2021 --age=46 --interval=3 --keep-alive=true  --key=<KEY_VALUE> --hook=notify
+// node app.js --pin=400094 --dose=2 --date=09-07-2021 --age=46 --interval=2 --keep-alive=true  --key=<KEY_VALUE> --hook=notify
+
 const axios = require('axios')
 const argv = require('minimist')(process.argv.slice(2));
 const { format } = require('date-fns');
@@ -139,9 +146,9 @@ function pingCowin({ key, hook, age, districtId, appointmentsListLimit, date, pi
                         if (dose === 1 && session.available_capacity_dose1 <= 0) {
                             return;
                         }
-                        /*if (dose === 2 && session.available_capacity_dose2 <= 0) {
+                        if (dose === 2 && session.available_capacity_dose2 <= 0) {
                             return;
-                        }*/
+                        }
                         if (vaccine && vaccine.toLowerCase() !== session.vaccine.toLowerCase()) {
                             return;
                         }
